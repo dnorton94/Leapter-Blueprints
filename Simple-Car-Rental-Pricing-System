@@ -1,0 +1,53 @@
+/**
+ * Car Rental Pricing System
+ * This document outlines the logic for a car rental pricing system. The system calculates rental prices based on the selected car model, rental duration, and customer age, including potential surcharges for young drivers, and calculates fuel charges upon return.
+ *
+ * @param {{carModel: 'Economy' | 'Compact' | 'Mid-size' | 'SUV' | 'Luxury', customerAge: number, fuelMissingLiters: number, rentalDurationDays: number}} input - Input parameters
+ * @returns {{finalCost: number, fuelCharge: number, rentalPrice: number, errorMessage: string}} - Output result
+ */
+function executeLogicFlow(input) {
+  "use strict";
+
+  var output = {
+    finalCost: null,
+    fuelCharge: null,
+    rentalPrice: null,
+    errorMessage: null
+  };
+
+  var baseDailyRate = null;
+  var adjustedDailyRate = null;
+  var totalRawPrice = null;
+  var FUEL_CHARGE_PER_LITER = 2.5;
+
+  if (input.customerAge < 18) {
+    output.errorMessage = "Customer must be 18 years or older to rent a car.";
+    return output;
+  }
+
+  if (input.carModel === "Economy") {
+    baseDailyRate = 30;
+  } else if (input.carModel === "Compact") {
+    baseDailyRate = 40;
+  } else if (input.carModel === "Mid-size") {
+    baseDailyRate = 50;
+  } else if (input.carModel === "SUV") {
+    baseDailyRate = 70;
+  } else if (input.carModel === "Luxury") {
+    baseDailyRate = 100;
+  }
+
+  adjustedDailyRate = baseDailyRate;
+
+  if (input.customerAge < 25) {
+    var surchargeAmount = baseDailyRate * 0.15;
+    adjustedDailyRate = baseDailyRate + surchargeAmount;
+  }
+
+  totalRawPrice = adjustedDailyRate * input.rentalDurationDays;
+  output.rentalPrice = Math.round(totalRawPrice * 100) / 100;
+  var fuelCost = input.fuelMissingLiters * FUEL_CHARGE_PER_LITER;
+  output.fuelCharge = Math.round(fuelCost * 100) / 100;
+  output.finalCost = output.rentalPrice + output.fuelCharge;
+  return output;
+}
